@@ -1,0 +1,22 @@
+{
+  "repository": "aunysillyme/website-build-skill",
+  "commit": "7ba900046cb9f5d8ff0b3077924d35d07cbff122",
+  "version": "0.1.15",
+  "files": {
+    "README.md": "4a9fe7f0ec6cfefa79d6449eff1cb94354364acb81355ef42ee71f6bdc40ce42",
+    "docs/README.md": "eee5835dc95cd0d757ef6e011160d404368e7b0168b9fd2fd92c9bc67a84c92d",
+    "docs/INSTALLER.md": "9aeb2ccf0e13e1e815344d080685012a33a8b4d62f3f77f1abc5bb722103813a",
+    "docs/COMPATIBILITY.md": "c9724982b8fd941357aebeeb1174c8d978a6808457f12dd4c976593b88c4936b",
+    "docs/METHOD.md": "3b45db282de20f327c903e86f6d7da9440b5913907dfb75cadedf5e6b7210f95",
+    "docs/EVALUATION.md": "fab5e3b0fbff0febbf8384ca99e29f96a5c8fbf455bea67398c4da5dff5ad8ec",
+    "docs/PROVENANCE.md": "d7e464f6deaed305987e8720a64bf10ce8880f205a7bc17a0ad82840b8cccf8f",
+    "docs/LIBRARY-CHECK.md": "8aca9f1dcc5d99b47099ca58e9a5c7af6ad808415d7ebb6d5aa8d930d212a698",
+    "CHANGELOG.md": "950f5704904e186f5712f1dd94d1f5ea1f52a5faea53b717e83a60f5c041505b",
+    "adapters/codex.md": "005d05bfec4d1765e5d7e1048f086b344fa9ea6e50321ad8fd154001cc0f47fe",
+    "adapters/claude-code.md": "1a811ad3ca4520f1a87f1d66a09d7d21456eb9d9fbbf1697146410e223d3d5c1",
+    "adapters/hermes.md": "bfb7624ce627d7a59328a16a663ed71aa96dbe24ede160bc349f13dd08cd1578",
+    "adapters/antigravity.md": "c2e6c5000af64d35a583252c23a71f4ce1b85b43f243e980558e5d12c3809f01",
+    "adapters/grok.md": "722ec03c83e8edc7cff0d2b9a6f3fc46f2e5c971a483f8a93fc799e7dae9414c",
+    "adapters/chatgpt-project.md": "e8faa8762cd4501f3400d81cd90bca91d09b43e51ad74d8b03a7e1a0a6cdfa30"
+  }
+}
