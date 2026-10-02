@@ -4,3 +4,5 @@ dist/
 REVIEW.md
 .source-refresh/
 .source-backup/
+.vercel
+.env*
