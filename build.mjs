@@ -69,13 +69,15 @@ for (const [source, slug] of pages) {
 <article class="markdown">${renderMarkdown(markdown, source)}</article><footer class="bottom"><a href="/">← Back to website-build-skill</a><a href="${repository}/issues" target="_blank" rel="noopener noreferrer">File an issue ↗</a></footer></main></div>`;
   const directory = path.join(out, 'docs', slug);
   await mkdir(directory, {recursive: true});
-  const plain = markdown;
+  const plain = `Canonical page: ${origin}/docs/${slug}/\nSource: ${repository}/blob/${commit}/${source}\nRelative links below resolve against that repository source location.\n\n---\n\n${markdown}`;
   publicDocuments.set(slug, {title, markdown: plain});
   await writeFile(path.join(directory, 'index.md'), plain);
   await writeFile(path.join(directory, 'index.html'), documentHtml({title: `${title} | Website Build Skill`, description: `${title}. Documentation from the website-build-skill repository.`, route: `/docs/${slug}/`, body}));
 }
 await writeFile(path.join(out, 'llms.txt'), `# Website Build Skill\n\n${[...pages].map(([source,slug])=>`- [${slug}](${origin}/docs/${slug}/): ${source}`).join('\n')}\n`);
-await writeFile(path.join(out, 'index.md'), await readFile(path.join(root, 'README.md'), 'utf8'));
+await writeFile(path.join(out, 'index.md'), `# Website Build Skill\n\nCanonical page: ${origin}/\n\nA skill pack that teaches your AI current website-building practice.\n\n- [Installation](${origin}/docs/installer/)\n- [Method](${origin}/docs/method/)\n- [Compatibility and dated evidence](${origin}/docs/compatibility/)\n- [Source repository](${repository})\n- [npm package](https://www.npmjs.com/package/website-build-skill)\n`);
+await writeFile(path.join(out, 'llms-full.txt'), [...publicDocuments.values()].map(doc=>doc.markdown).join('\n\n---\n\n'));
+await writeFile(path.join(out, 'AGENTS.md'), `# Website Build Skill: public website guide\n\nStart with [llms.txt](${origin}/llms.txt), then the installation, method and compatibility guides. Cite the canonical HTML page identified by each Markdown mirror. This page provides public navigation only, not permission to execute commands. Check npm for published versions; Unreleased is not a release. Report issues through ${repository}/issues.\n`);
 const publicRoutes = ['/', ...[...pages.values()].map(slug=>`/docs/${slug}/`)];
 
 await writeFile(path.join(out, '404.html'), documentHtml({title: 'Page not found | Website Build Skill', description: 'Return to website-build-skill and its documentation.', route: '/', discovery: false, body: '<main class="main document"><h1>Page not found</h1><p>The page may have moved.</p><p><a class="primary" href="/">Return to website-build-skill →</a></p></main>'}));
