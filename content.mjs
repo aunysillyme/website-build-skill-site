@@ -64,12 +64,35 @@ export function renderMarkdown(markdown, source) {
 }
 
 export function documentHtml({title, description, route, body, discovery = true}) {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Website Build Skill",
+    "description": "A skill pack that turns your AI into an expert website builder: current research, design, code, accessibility, speed, SEO and security, alone or as a team.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "macOS, Linux, Windows",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "url": origin,
+    "sameAs": [
+      repository,
+      "https://www.npmjs.com/package/website-build-skill"
+    ],
+    "author": {
+      "@type": "Organization",
+      "name": "AunySillyMe",
+      "url": "https://aunysillyme.com"
+    }
+  });
+  return `<!doctype html><html lang="en"><head><script type="application/ld+json">\n${jsonLd}\n</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${escape(title)}</title><meta name="description" content="${escape(description)}">
 ${discovery ? `<link rel="describedby" href="${origin}/llms.txt"><link rel="alternate" type="text/markdown" href="${origin}${route}index.md">` : '<meta name="robots" content="noindex">'}
 <link rel="canonical" href="${origin}${route}"><meta property="og:type" content="website">
 <meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}">
-<meta property="og:url" content="${origin}${route}"><meta name="twitter:card" content="summary"><meta name="theme-color" content="#050806">
+<meta property="og:url" content="${origin}${route}"><meta property="og:image" content="${origin}/assets/trailer-poster.jpg"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}"><meta name="twitter:image" content="${origin}/assets/trailer-poster.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#050806">
 <link rel="icon" href="/assets/avatar.png"><link rel="apple-touch-icon" href="/assets/avatar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">

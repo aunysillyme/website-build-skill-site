@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {readFile,readdir,stat} from 'node:fs/promises';
 import path from 'node:path';
 import {parseDocument} from 'htmlparser2';
-const out=new URL('./dist/',import.meta.url).pathname;
+import {fileURLToPath} from 'node:url';
+const out=fileURLToPath(new URL('./dist/',import.meta.url));
 async function files(dir){const list=[];for(const name of await readdir(dir)){const file=path.join(dir,name);if((await stat(file)).isDirectory())list.push(...await files(file));else list.push(file);}return list;}
 function nodes(node){return [node,...(node.children||[]).flatMap(nodes)];}
 test('Every generated local link, asset and anchor resolves',async()=>{for(const file of (await files(out)).filter(f=>f.endsWith('.html'))){const doc=nodes(parseDocument(await readFile(file,'utf8')));for(const node of doc){const link=node.attribs?.href||node.attribs?.src;if(!link||/^(https?:|mailto:|data:)/.test(link))continue;const [url,fragment]=link.split('#');let target=url?path.join(out,url):file;if(url?.endsWith('/'))target=path.join(target,'index.html');assert.ok((await stat(target)).isFile(),`${file}: ${link}`);if(fragment){const targetNodes=url?nodes(parseDocument(await readFile(target,'utf8'))):doc;assert.ok(targetNodes.some(n=>n.attribs?.id===decodeURIComponent(fragment)),`${file}: missing anchor ${link}`);}}}});

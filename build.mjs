@@ -55,7 +55,7 @@ landing = landing.replace('</footer>', `<span>Source <a href="${repository}/tree
 await rm(out, {recursive: true, force: true});
 await mkdir(out, {recursive: true});
 await cp(path.join(here, 'assets'), path.join(out, 'assets'), {recursive: true});
-await writeFile(path.join(out, 'index.html'), documentHtml({title: 'Website Build Skill | AunySillyMe', description: 'A skill pack that teaches your AI current website-building practice in research, design, code, accessibility, performance, search and security.', route: '/', body: landing}));
+await writeFile(path.join(out, 'index.html'), documentHtml({title: 'Website Build Skill: AI skill pack for building websites', description: 'A skill pack that teaches your AI current website-building practice in research, design, code, accessibility, performance, search and security.', route: '/', body: landing}));
 
 const navItems = [...pages].map(([source, slug]) => `<a href="/docs/${slug}/">${escape(({overview: 'Overview', guides: 'All guides', commands: 'Commands', proof: 'Measured proof', changelog: 'Changelog'})[slug] || slug.replaceAll('-', ' '))}</a>`).join('');
 const publicDocuments = new Map();
@@ -82,6 +82,6 @@ const publicRoutes = ['/', ...[...pages.values()].map(slug=>`/docs/${slug}/`)];
 
 await writeFile(path.join(out, '404.html'), documentHtml({title: 'Page not found | Website Build Skill', description: 'Return to website-build-skill and its documentation.', route: '/', discovery: false, body: '<main class="main document"><h1>Page not found</h1><p>The page may have moved.</p><p><a class="primary" href="/">Return to website-build-skill →</a></p></main>'}));
 await writeFile(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
-await writeFile(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${publicRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>\n`);
+await writeFile(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${publicRoutes.map(route => `<url><loc>${origin}${route}</loc><lastmod>${built}</lastmod></url>`).join('')}</urlset>\n`);
 await writeFile(path.join(out, 'build-info.json'), JSON.stringify({commit, siteCommit, built, published, registryVerified, pages: pages.size + 1}, null, 2) + '\n');
 console.log(`Built landing page and ${pages.size} source-derived docs pages, npm v${published.version}, commit ${commit.slice(0, 7)}.`);
