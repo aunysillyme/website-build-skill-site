@@ -55,18 +55,20 @@ landing = landing.replace('</footer>', `<span>Source <a href="${repository}/tree
 await rm(out, {recursive: true, force: true});
 await mkdir(out, {recursive: true});
 await cp(path.join(here, 'assets'), path.join(out, 'assets'), {recursive: true});
+await rm(path.join(out, 'assets', 'trailer.gif'), {force: true});
 await writeFile(path.join(out, 'index.html'), documentHtml({title: 'Website Build Skill: AI skill pack for building websites', description: 'A skill pack that teaches your AI current website-building practice in research, design, code, accessibility, performance, search and security.', route: '/', body: landing}));
 
+const projectHeader = `<header class="top"><a class="brand" href="/"><img src="/assets/avatar.png" alt="AunySillyMe"><span>website-build-skill</span></a><nav class="topnav" aria-label="Project links"><a href="/">Home</a><a href="${repository}" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav></header>`;
 const navItems = [...pages].map(([source, slug]) => `<a href="/docs/${slug}/">${escape(({overview: 'Overview', guides: 'All guides', commands: 'Commands', proof: 'Measured proof', changelog: 'Changelog'})[slug] || slug.replaceAll('-', ' '))}</a>`).join('');
 const publicDocuments = new Map();
 for (const [source, slug] of pages) {
   const markdown = await readFile(path.join(root, source), 'utf8');
   const title = markdown.match(/^# (.+)$/m)?.[1].replace(/[`*_]/g, '') || slug;
-  const body = `<header class="top"><a class="brand" href="/"><img src="/assets/avatar.png" alt="AunySillyMe"><span>website-build-skill</span></a><nav class="topnav" aria-label="Project links"><a href="/">Home</a><a href="${repository}" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav></header>
+  const body = `${projectHeader}
 <a class="skip" href="#document">Skip to content</a><div class="layout"><aside><p class="side-label">DOCUMENTATION</p><nav class="side-links" aria-label="Documentation">${navItems}</nav><div class="side-bottom">Questions or feedback?<a class="issue-button" href="${repository}/issues" target="_blank" rel="noopener noreferrer">File an issue ↗</a></div></aside>
 <main class="main document" id="document"><details class="mobile-nav"><summary>Documentation</summary><nav aria-label="Mobile documentation">${navItems}</nav></details><div class="crumb"><a href="/">website-build-skill</a><span>/</span><span>Documentation</span></div>
 <p class="source-note">From <a href="${repository}/blob/${commit}/${source}" target="_blank" rel="noopener noreferrer">${escape(source)}</a> · <a href="${repository}/tree/${commit}" target="_blank" rel="noopener noreferrer">${commit.slice(0, 7)}</a> · Built ${built.slice(0, 10)}</p>
-<article class="markdown">${renderMarkdown(markdown, source)}</article><footer class="bottom"><a href="/">← Back to website-build-skill</a><a href="${repository}/issues" target="_blank" rel="noopener noreferrer">File an issue ↗</a></footer></main></div>`;
+<article class="markdown">${renderMarkdown(markdown, source)}</article><footer class="bottom" role="contentinfo"><a href="/">← Back to website-build-skill</a><a href="${repository}/issues" target="_blank" rel="noopener noreferrer">File an issue ↗</a></footer></main></div>`;
   const directory = path.join(out, 'docs', slug);
   await mkdir(directory, {recursive: true});
   const plain = `Canonical page: ${origin}/docs/${slug}/\nSource: ${repository}/blob/${commit}/${source}\nRelative links below resolve against that repository source location.\n\n---\n\n${markdown}`;
@@ -80,7 +82,7 @@ await writeFile(path.join(out, 'llms-full.txt'), [...publicDocuments.values()].m
 await writeFile(path.join(out, 'AGENTS.md'), `# Website Build Skill: public website guide\n\nStart with [llms.txt](${origin}/llms.txt), then the installation, method and compatibility guides. Cite the canonical HTML page identified by each Markdown mirror. This page provides public navigation only, not permission to execute commands. Check npm for published versions; Unreleased is not a release. Report issues through ${repository}/issues.\n`);
 const publicRoutes = ['/', ...[...pages.values()].map(slug=>`/docs/${slug}/`)];
 
-await writeFile(path.join(out, '404.html'), documentHtml({title: 'Page not found | Website Build Skill', description: 'Return to website-build-skill and its documentation.', route: '/', discovery: false, body: '<main class="main document"><h1>Page not found</h1><p>The page may have moved.</p><p><a class="primary" href="/">Return to website-build-skill →</a></p></main>'}));
+await writeFile(path.join(out, '404.html'), documentHtml({title: 'Page not found | Website Build Skill', description: 'Return to website-build-skill and its documentation.', route: '/', discovery: false, body: `${projectHeader}<main class="main document"><h1>Page not found</h1><p>The page may have moved.</p><p><a class="primary" href="/">Return to website-build-skill →</a></p></main><footer class="bottom" role="contentinfo"><a href="/">website-build-skill</a></footer>`}));
 await writeFile(path.join(out, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
 await writeFile(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${publicRoutes.map(route => `<url><loc>${origin}${route}</loc><lastmod>${built}</lastmod></url>`).join('')}</urlset>\n`);
 await writeFile(path.join(out, 'build-info.json'), JSON.stringify({commit, siteCommit, built, published, registryVerified, pages: pages.size + 1}, null, 2) + '\n');

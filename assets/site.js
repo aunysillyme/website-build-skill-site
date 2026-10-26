@@ -7,6 +7,6 @@ setupNavigation();
 
 import {setupTrailer} from './trailer.js';
 import {refreshRelease} from './releases.js';
-setupTrailer(document.querySelector('#trailer video'));
+document.querySelectorAll('video').forEach(video => setupTrailer(video));
 refreshRelease();
 document.querySelectorAll('.mobile-nav a').forEach(link => link.addEventListener('click', () => { link.closest('details').open = false; }));

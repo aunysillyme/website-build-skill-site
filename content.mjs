@@ -39,26 +39,36 @@ function rewriteUrl(href, source, image = false) {
 export function renderMarkdown(markdown, source) {
   const slugger = new GithubSlugger();
   const renderer = new marked.Renderer();
+  renderer.image = function (token) {
+    if (token.href?.endsWith('/docs/trailer.gif')) {
+      return `<video controls muted loop playsinline preload="none" width="960" height="540" poster="/assets/trailer-poster.jpg" aria-label="${escape(token.text)}"><source src="/assets/trailer.webm" type="video/webm"><source src="/assets/trailer.mp4" type="video/mp4">${escape(token.text)}</video>`;
+    }
+    return marked.Renderer.prototype.image.call(this, token);
+  };
   renderer.heading = function ({ tokens, depth }) {
     const text = this.parser.parseInline(tokens);
     const id = slugger.slug(sanitizeHtml(text, {allowedTags: [], allowedAttributes: {}}));
     return `<h${depth} id="${escape(id)}">${text}</h${depth}>\n`;
   };
   return sanitizeHtml(marked.parse(markdown, {renderer, gfm: true}), {
-    allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img', 'details', 'summary', 'del'],
+    allowedTags: [...sanitizeHtml.defaults.allowedTags, 'img', 'details', 'summary', 'del', 'video', 'source'],
     allowedAttributes: {
       a: ['href', 'target', 'rel', 'id'], img: ['src', 'alt', 'width', 'height', 'loading'],
-      '*': ['id'], code: ['class'],
+      '*': ['id'], code: ['class'], pre: ['tabindex'], table: ['tabindex'],
+      video: ['controls', 'muted', 'loop', 'playsinline', 'preload', 'width', 'height', 'poster', 'aria-label'],
+      source: ['src', 'type'],
     },
     allowedSchemes: ['http', 'https', 'mailto'],
     allowProtocolRelative: false,
     transformTags: {
+      pre: (_tag, attributes) => ({tagName: 'pre', attribs: {...attributes, tabindex: '0'}}),
+      table: (_tag, attributes) => ({tagName: 'table', attribs: {...attributes, tabindex: '0'}}),
       a: (_tag, attributes) => {
         const href = rewriteUrl(attributes.href, source);
         const external = /^https?:\/\//i.test(href || '');
         return {tagName: 'a', attribs: {...attributes, href, ...(external ? {target: '_blank', rel: 'noopener noreferrer'} : {target: '', rel: ''})}};
       },
-      img: (_tag, attributes) => ({tagName: 'img', attribs: {...attributes, src: attributes.src?.endsWith('/docs/demo.gif') ? '/assets/demo.gif' : attributes.src?.endsWith('/docs/trailer.gif') ? '/assets/trailer.gif' : rewriteUrl(attributes.src, source, true), loading: 'lazy'}}),
+      img: (_tag, attributes) => ({tagName: 'img', attribs: {...attributes, src: attributes.src?.endsWith('/docs/demo.gif') ? '/assets/demo.gif' : rewriteUrl(attributes.src, source, true), loading: 'lazy'}}),
     },
   });
 }

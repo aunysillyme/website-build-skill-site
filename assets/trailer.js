@@ -4,13 +4,11 @@ export function setupTrailer(video, environment = window, documentRef = document
   const preference = environment.matchMedia('(prefers-reduced-motion: reduce)');
   let attempted = false;
   let visible = false;
-  let automatic = false;
   const maybePlay = () => {
     if (attempted || preference.matches || !visible || documentRef.hidden) return;
     attempted = true;
-    automatic = true;
     video.muted = true;
-    video.play().catch(() => { automatic = false; });
+    video.play().catch(() => {});
   };
   video.addEventListener('play', () => { attempted = true; });
   if ('IntersectionObserver' in environment) {
@@ -22,7 +20,13 @@ export function setupTrailer(video, environment = window, documentRef = document
   }
   documentRef.addEventListener('visibilitychange', maybePlay);
   preference.addEventListener('change', () => {
-    if (preference.matches && automatic) { video.pause(); automatic = false; }
+    if (preference.matches) {
+      video.pause();
+      video.currentTime = 0;
+      video.load();
+      video.controls = true;
+      attempted = false;
+    }
     maybePlay();
   });
 }
