@@ -41,7 +41,8 @@ export function renderMarkdown(markdown, source) {
   const renderer = new marked.Renderer();
   renderer.image = function (token) {
     if (token.href?.endsWith('/docs/trailer.gif')) {
-      return `<video controls muted loop playsinline preload="none" width="960" height="540" poster="/assets/trailer-poster.jpg" aria-label="${escape(token.text)}"><source src="/assets/trailer.webm" type="video/webm"><source src="/assets/trailer.mp4" type="video/mp4">${escape(token.text)}</video>`;
+      // Prefer MP4 for reliable looping in WebKit; WebM remains the fallback.
+      return `<video controls muted loop playsinline preload="none" width="960" height="540" poster="/assets/trailer-poster.jpg" aria-label="${escape(token.text)}"><source src="/assets/trailer.mp4" type="video/mp4"><source src="/assets/trailer.webm" type="video/webm">${escape(token.text)}</video>`;
     }
     return marked.Renderer.prototype.image.call(this, token);
   };
@@ -68,7 +69,12 @@ export function renderMarkdown(markdown, source) {
         const external = /^https?:\/\//i.test(href || '');
         return {tagName: 'a', attribs: {...attributes, href, ...(external ? {target: '_blank', rel: 'noopener noreferrer'} : {target: '', rel: ''})}};
       },
-      img: (_tag, attributes) => ({tagName: 'img', attribs: {...attributes, src: attributes.src?.endsWith('/docs/demo.gif') ? '/assets/demo.gif' : rewriteUrl(attributes.src, source, true), loading: 'lazy'}}),
+      img: (_tag, attributes) => {
+        const src = attributes.src === `${repository}/actions/workflows/check.yml/badge.svg`
+          ? 'https://img.shields.io/github/actions/workflow/status/aunysillyme/website-build-skill/check.yml?label=Repository%20checks'
+          : attributes.src?.endsWith('/docs/demo.gif') ? '/assets/demo.gif' : rewriteUrl(attributes.src, source, true);
+        return {tagName: 'img', attribs: {...attributes, src, loading: 'lazy'}};
+      },
     },
   });
 }

@@ -56,7 +56,7 @@ test('Documentation trailers use small local video sources and preserve the GIF 
     assert.equal(trailer.attribs.preload,'none');
     assert.equal(trailer.attribs.poster,'/assets/trailer-poster.jpg');
     assert.deepEqual(trailer.children.filter(node=>node.name==='source').map(node=>node.attribs),[
-      {src:'/assets/trailer.webm',type:'video/webm'},{src:'/assets/trailer.mp4',type:'video/mp4'}
+      {src:'/assets/trailer.mp4',type:'video/mp4'},{src:'/assets/trailer.webm',type:'video/webm'}
     ]);
   }
   for(const file of (await files(out)).filter(file=>file.endsWith('.html')))assert.doesNotMatch(await readFile(file,'utf8'),/trailer\.gif/);
@@ -68,6 +68,18 @@ test('Generated pages provide landmarks and keyboard access to scrollable conten
   for(const file of (await files(out)).filter(file=>file.endsWith('.html'))){
     const doc=nodes(parseDocument(await readFile(file,'utf8')));
     for(const name of ['header','nav','main','footer'])assert.ok(doc.some(node=>node.name===name),`${file}: missing ${name}`);
+    for(const node of doc.filter(node=>node.name==='footer')){
+      let parent=node.parent;
+      while(parent){
+        assert.ok(!['main','article','section','nav','aside'].includes(parent.name),`${file}: footer must be a page landmark`);
+        parent=parent.parent;
+      }
+    }
+    for(const node of doc.filter(node=>node.attribs?.class==='skip')){
+      let parent=node.parent;
+      while(parent&&parent.name!=='header')parent=parent.parent;
+      assert.ok(parent,`${file}: skip link must belong to the header landmark`);
+    }
     for(const node of doc.filter(node=>['pre','table'].includes(node.name)))assert.equal(node.attribs.tabindex,'0',`${file}: ${node.name}`);
   }
 });
