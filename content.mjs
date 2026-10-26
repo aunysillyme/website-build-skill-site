@@ -42,7 +42,7 @@ export function renderMarkdown(markdown, source) {
   renderer.image = function (token) {
     if (token.href?.endsWith('/docs/trailer.gif')) {
       // Prefer MP4 for reliable looping in WebKit; WebM remains the fallback.
-      return `<video controls muted loop playsinline preload="none" width="960" height="540" poster="/assets/trailer-poster.jpg" aria-label="${escape(token.text)}"><source src="/assets/trailer.mp4" type="video/mp4"><source src="/assets/trailer.webm" type="video/webm">${escape(token.text)}</video>`;
+      return `<video controls muted loop playsinline preload="none" width="960" height="540" poster="/assets/trailer-loop-poster.jpg" aria-label="${escape(token.text)}"><source src="/assets/trailer-loop.mp4" type="video/mp4"><source src="/assets/trailer-loop.webm" type="video/webm">${escape(token.text)}</video>`;
     }
     return marked.Renderer.prototype.image.call(this, token);
   };
