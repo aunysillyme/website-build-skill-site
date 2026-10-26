@@ -21,6 +21,7 @@ test('Security headers cover every route and inline script hashes match the buil
   const directives=Object.fromEntries(headers['Content-Security-Policy'].split(';').map(part=>part.trim().split(/\s+/)).filter(([name])=>name).map(([name,...values])=>[name,values]));
   for(const name of ['default-src','base-uri','media-src'])assert.deepEqual(directives[name],["'self'"]);
   for(const name of ['object-src','frame-ancestors'])assert.deepEqual(directives[name],["'none'"]);
+  assert.deepEqual(directives['connect-src'],["'self'",'https://registry.npmjs.org','https://fonts.googleapis.com']);
   assert.equal(directives['script-src'][0],"'self'");
   assert.ok(directives['script-src'].slice(1).every(value=>/^'sha256-[A-Za-z0-9+/]{43}='$/.test(value)));
   const hashes=new Set();
