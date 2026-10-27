@@ -1,5 +1,7 @@
 # Website Build Skill product site
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/aunysillyme/website-build-skill-site/badge)](https://scorecard.dev/viewer/?uri=github.com/aunysillyme/website-build-skill-site)
+
 Product page and source-rendered guides for [website-build-skill](https://github.com/aunysillyme/website-build-skill). Canonical site: https://website-build-skill.aunysillyme.dev/.
 
 This site lives outside the canonical skill repository. The package privacy gate restricts portfolio branding and product-domain identifiers, so its rules and npm files remain unchanged.
