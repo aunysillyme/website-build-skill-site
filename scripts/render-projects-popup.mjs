@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
 import { renderProjectsPopup, escapeHtml } from './lib/projects-popup-render.mjs';
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -24,17 +23,10 @@ if (updated.split(siblingsStart).length !== 2 || updated.split(siblingsEnd).leng
 }
 const siblings = rows.filter(({ name }) => name !== 'website-build-skill').map(({ name }) => `<a href="https://${escapeHtml(name)}.aunysillyme.dev/" target="_blank" rel="noopener noreferrer">${escapeHtml(name)} ↗</a>`).join('');
 const rendered = updated.slice(0, updated.indexOf(siblingsStart) + siblingsStart.length) + siblings + updated.slice(updated.indexOf(siblingsEnd));
-const configPath = resolve(root, 'vercel.json');
-const config = readFileSync(configPath, 'utf8');
-const hashes = rows.map((_, index) => `'sha256-${createHash('sha256').update(`--row:${index}`).digest('base64')}'`).join(' ');
-const directive = `style-src-attr 'unsafe-hashes' ${hashes};`;
-if (!/style-src-attr [^;]*;/.test(config)) throw new Error('vercel.json: missing style-src-attr directive');
-const updatedConfig = config.replace(/style-src-attr [^;]*;/, directive);
-if (rendered !== html || updatedConfig !== config) {
-  if (check) { console.error('Generated projects markup or CSP hashes are out of date'); process.exitCode = 1; }
+if (rendered !== html) {
+  if (check) { console.error('Generated projects markup is out of date'); process.exitCode = 1; }
   else {
-    if (rendered !== html) writeFileSync(resolve(root, 'landing.html'), rendered);
-    if (updatedConfig !== config) writeFileSync(configPath, updatedConfig);
-    console.log('Rendered projects markup and CSP hashes.');
+    writeFileSync(resolve(root, 'landing.html'), rendered);
+    console.log('Rendered projects markup.');
   }
-} else if (check) console.log('Projects markup and CSP hashes are current.');
+} else if (check) console.log('Projects markup is current.');

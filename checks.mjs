@@ -19,8 +19,6 @@ test('Security headers cover every route and inline script hashes match the buil
   assert.equal(headers['X-Content-Type-Options'],'nosniff');
   assert.equal(headers['Referrer-Policy'],'strict-origin-when-cross-origin');
   const directives=Object.fromEntries(headers['Content-Security-Policy'].split(';').map(part=>part.trim().split(/\s+/)).filter(([name])=>name).map(([name,...values])=>[name,values]));
-  const styleAttrHashes=new Set((directives['style-src-attr']||[]).filter(value=>/^'sha256-/.test(value)));
-  assert.ok((directives['style-src-attr']||[]).includes("'unsafe-hashes'"));
   for(const name of ['default-src','base-uri','media-src'])assert.deepEqual(directives[name],["'self'"]);
   for(const name of ['object-src','frame-ancestors'])assert.deepEqual(directives[name],["'none'"]);
   assert.deepEqual(directives['connect-src'],["'self'",'https://registry.npmjs.org','https://fonts.googleapis.com']);
@@ -33,10 +31,7 @@ test('Security headers cover every route and inline script hashes match the buil
       if(!/\bsrc=/.test(match[1]))hashes.add(`'sha256-${createHash('sha256').update(match[2]).digest('base64')}'`);
     }
     for(const node of nodes(parseDocument(html))){
-      for(const name of Object.keys(node.attribs||{})){
-        assert.ok(!/^on/i.test(name),`${file}: inline ${name}`);
-        if(name==='style')assert.ok(styleAttrHashes.has(`'sha256-${createHash('sha256').update(node.attribs.style).digest('base64')}'`),`${file}: style attribute "${node.attribs.style}" needs a hash in style-src-attr`);
-      }
+      for(const name of Object.keys(node.attribs||{}))assert.ok(!/^on/i.test(name)&&name!=='style',`${file}: inline ${name}`);
       const url=node.attribs?.src||(node.name==='link'?node.attribs?.href:null);
       if(!url?.startsWith('https://')||node.attribs?.rel==='preconnect'||['canonical','describedby','alternate'].includes(node.attribs?.rel))continue;
       const directive=node.name==='img'?'img-src':node.name==='link'?'style-src':node.name==='source'?'media-src':'script-src';
