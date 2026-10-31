@@ -10,6 +10,8 @@ This site lives outside the canonical skill repository. The package privacy gate
 
 Node 22 or later. Run `npm ci`, `npm run build`, and `npm run check`. Serve `dist/` with a static server for local review. Vercel builds the same output using the committed lockfile.
 
+After updating `.repo-build/set.json`, run `npm run popup:render` and include the generated landing markup and CSP hashes in the change. The build and check commands reject stale generated output.
+
 ## Refresh source documentation
 
 `source/` contains only the explicit public Markdown list in `source-lock.json`, copied from its recorded immutable WBS commit. Build verifies every SHA-256 digest. To adopt a reviewed WBS revision, run `npm run source:refresh -- <40-character-commit>`, review the source diff and package version, run the build/checks, commit, and push. The refresh script copies data only and never executes WBS source. npm latest is checked separately at build time and by the browser; only matching rendered release notes are shown. This is an explicit refresh, not an unattended schedule.
