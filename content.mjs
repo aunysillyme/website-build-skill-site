@@ -112,7 +112,7 @@ ${discovery ? `<link rel="describedby" href="${origin}/llms.txt"><link rel="alte
 <meta property="og:url" content="${origin}${route}"><meta property="og:image" content="${origin}/assets/trailer-poster.jpg"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}"><meta name="twitter:image" content="${origin}/assets/trailer-poster.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#050806">
 <link rel="icon" href="/assets/avatar.png"><link rel="apple-touch-icon" href="/assets/avatar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/projects-popup.css"><script type="module" src="/assets/site.js"></script><script defer src="/assets/projects-popup.js"></script>
 <script>window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };</script>
 <script defer src="/_vercel/speed-insights/script.js"></script></head><body>${body}</body></html>`;
