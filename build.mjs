@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { documentHtml, renderMarkdown, releaseEntries, pages, origin, repository, escape, populateLanding } from './content.mjs';
+import { renderProjectsPopup } from './scripts/lib/projects-popup-render.mjs';
 import { validRelease } from './assets/releases.js';
 import {marked} from 'marked';
 
@@ -22,6 +23,7 @@ let siteCommit = process.env.VERCEL_GIT_COMMIT_SHA || execFileSync('git', ['rev-
 if(!/^[a-f0-9]{40}$/.test(siteCommit)) throw new Error('Expected a full site commit SHA');
 const built = new Date().toISOString();
 const fallback = JSON.parse(await readFile(path.join(here, 'release-fallback.json'), 'utf8'));
+const projectsPopup = renderProjectsPopup({ rows: JSON.parse(await readFile(path.join(here, '.repo-build', 'set.json'), 'utf8')).rows, current: 'website-build-skill', id: 'projects-popup', fallbackHref: 'https://aunysillyme.dev/#projects' });
 let published = fallback;
 let registryVerified = false;
 try {
@@ -48,6 +50,7 @@ const releasePanels = releases.map(entry => `<article class="release" data-relea
 const releaseArea = `<p class="note" data-release-status>${registryVerified ? 'Latest published version, checked with npm at build time.' : `Published version last verified ${escape(published.verifiedAt)}. Checking npm for an update.`}</p>${releasePanels}<p><a class="primary" href="/docs/changelog/">Full changelog ↗</a></p>`;
 const proofFigures = '';
 let landing = await readFile(path.join(here, 'landing.html'), 'utf8');
+landing = landing.replace(/(<!-- projects-popup:start -->)[\s\S]*?(<!-- projects-popup:end -->)/, (_, start, end) => `${start}${projectsPopup}${end}`);
 landing = populateLanding(landing, `v${published.version}`, releaseArea);
 landing = landing.replace('{{PROOF}}', () => proofFigures);
 landing = landing.replace('</footer>', `<span>Source <a href="${repository}/tree/${commit}" target="_blank" rel="noopener noreferrer">${commit.slice(0, 7)}</a></span></footer>`);
@@ -58,7 +61,7 @@ await cp(path.join(here, 'assets'), path.join(out, 'assets'), {recursive: true})
 await rm(path.join(out, 'assets', 'trailer.gif'), {force: true});
 await writeFile(path.join(out, 'index.html'), documentHtml({title: 'Website Build Skill: AI skill pack for building websites', description: 'A skill pack that teaches your AI current website-building practice in research, design, code, accessibility, performance, search and security.', route: '/', body: landing}));
 
-const projectHeader = `<header class="top"><a class="brand" href="/"><img src="/assets/avatar.png" alt="AunySillyMe"><span>website-build-skill</span></a><nav class="topnav" aria-label="Project links"><a href="/">Home</a><a href="${repository}" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav><a class="skip" href="#document">Skip to content</a></header>`;
+const projectHeader = `<header class="top"><a class="brand" href="/"><img src="/assets/avatar.png" alt="AunySillyMe"><span>website-build-skill</span></a><nav class="topnav" aria-label="Project links"><a href="/">Home</a><!-- projects-popup:start -->${projectsPopup}<!-- projects-popup:end --><a href="${repository}" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav><a class="skip" href="#document">Skip to content</a></header>`;
 const navItems = [...pages].map(([source, slug]) => `<a href="/docs/${slug}/">${escape(({overview: 'Overview', guides: 'All guides', commands: 'Commands', proof: 'Measured proof', changelog: 'Changelog'})[slug] || slug.replaceAll('-', ' '))}</a>`).join('');
 const publicDocuments = new Map();
 for (const [source, slug] of pages) {

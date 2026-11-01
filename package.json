@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.mjs",
-    "check": "node --test checks.mjs",
+    "build": "node scripts/render-projects-popup.mjs --check && node build.mjs",
+    "check": "node scripts/render-projects-popup.mjs --check && node --test checks.mjs",
+    "popup:render": "node scripts/render-projects-popup.mjs",
     "source:refresh": "node refresh-source.mjs"
   },
   "engines": {
