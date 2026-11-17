@@ -1,7 +1,9 @@
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import GithubSlugger from 'github-slugger';
+import { statSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {validVersion} from './assets/releases.js';
 
 export const origin = 'https://website-build-skill.aunysillyme.dev';
@@ -15,6 +17,11 @@ export const pages = new Map([
 export const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[char]));
 export const semver = validVersion;
 
+const sourceRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), 'source');
+function isSourceDirectory(file) {
+  try { return statSync(path.join(sourceRoot, file)).isDirectory(); } catch { return file.endsWith('/'); }
+}
+
 export function populateLanding(template, version, releases) {
   return template.replace('{{VERSION}}', () => version).replace('{{RELEASES}}', () => releases);
 }
@@ -27,13 +34,48 @@ export function releaseEntries(markdown) {
   }] : []);
 }
 
-function rewriteUrl(href, source, image = false) {
+function rewriteUrl(href, source, image = false, ref = 'main', absolute = false) {
   if (!href || href.startsWith('#') || /^[a-z][a-z\d+.-]*:/i.test(href) || href.startsWith('//')) return href;
-  const [file, fragment] = href.split('#');
+  if (absolute && href.startsWith('/')) return `${origin}${href}`;
+  const hash = href.indexOf('#');
+  const file = hash < 0 ? href : href.slice(0, hash);
+  const suffix = hash < 0 ? '' : href.slice(hash);
   const normalized = path.posix.normalize(path.posix.join(path.posix.dirname(source), file));
-  const suffix = fragment ? `#${fragment}` : '';
-  if (!image && pages.has(normalized)) return `/docs/${pages.get(normalized)}/${suffix}`;
-  return `${image ? 'https://raw.githubusercontent.com/aunysillyme/website-build-skill/main' : `${repository}/blob/main`}/${normalized}${suffix}`;
+  if ((!image || absolute) && pages.has(normalized)) return `${absolute ? origin : ''}/docs/${pages.get(normalized)}/${suffix}`;
+  const isDir = file.endsWith('/') || isSourceDirectory(normalized);
+  const trailing = isDir && !normalized.endsWith('/') ? '/' : '';
+  if (absolute) return `${repository}/${image ? 'raw' : isDir ? 'tree' : 'blob'}/${ref}/${normalized}${trailing}${suffix}`;
+  return `${image ? 'https://raw.githubusercontent.com/aunysillyme/website-build-skill/main' : `${repository}/${isDir ? 'tree' : 'blob'}/main`}/${normalized}${trailing}${suffix}`;
+}
+
+export function rewriteMirror(markdown, source, commit) {
+  const tokens = marked.lexer(markdown);
+  const images = new Set();
+  const protectedRanges = [];
+  marked.walkTokens(tokens, token => {
+    if (token.type === 'image') images.add(token.href);
+    if (!['code', 'codespan'].includes(token.type)) return;
+    let at = -1;
+    while ((at = markdown.indexOf(token.raw, at + 1)) !== -1) protectedRanges.push([at, at + token.raw.length]);
+  });
+  const edits = new Map();
+  marked.walkTokens(tokens, token => {
+    if (!['link', 'image', 'def'].includes(token.type) || !token.href) return;
+    if (token.type !== 'def' && !/\]\(\s*<?/.test(token.raw)) return;
+    const destination = token.type === 'def' ? token.raw.indexOf(':') + 1 : token.raw.indexOf('](') + 2;
+    const offset = token.raw.indexOf(token.href, destination);
+    if (offset < 0) return;
+    const image = token.type === 'image' || (token.type === 'def' && images.has(token.href));
+    const value = rewriteUrl(token.href, source, image, commit, true);
+    if (value === token.href) return;
+    let at = -1;
+    while ((at = markdown.indexOf(token.raw, at + 1)) !== -1) {
+      const start = at + offset;
+      if (!protectedRanges.some(([from, to]) => start >= from && start < to)) edits.set(start, {end: start + token.href.length, value});
+    }
+  });
+  for (const [start, edit] of [...edits].sort((a,b)=>b[0]-a[0])) markdown = markdown.slice(0,start) + edit.value + markdown.slice(edit.end);
+  return markdown;
 }
 
 export function renderMarkdown(markdown, source) {
@@ -79,38 +121,99 @@ export function renderMarkdown(markdown, source) {
   });
 }
 
-export function documentHtml({title, description, route, body, discovery = true}) {
-  const jsonLd = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Website Build Skill",
-    "description": "A skill pack that turns your AI into an expert website builder: current research, design, code, accessibility, speed, SEO and security, alone or as a team.",
-    "applicationCategory": "DeveloperApplication",
-    "operatingSystem": "macOS, Linux, Windows",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+const landingDescription = 'Open-source skill pack teaching Claude Code, Codex and Gemini current web practice: research, design, HTML/CSS, accessibility, CWV, SEO and security.';
+
+function buildJsonLd(route, title) {
+  const graph = [
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": `${origin}/#source`,
+      "name": "website-build-skill",
+      "description": landingDescription,
+      "url": `${origin}/`,
+      "codeRepository": repository,
+      "programmingLanguage": "JavaScript",
+      "runtimePlatform": "Node.js",
+      "version": "0.1.24",
+      "license": "https://spdx.org/licenses/MIT.html",
+      "author": { "@id": "https://aunysillyme.dev/#person" },
+      "sameAs": [
+        repository,
+        "https://www.npmjs.com/package/website-build-skill"
+      ]
     },
-    "url": origin,
-    "sameAs": [
-      repository,
-      "https://www.npmjs.com/package/website-build-skill"
-    ],
-    "author": {
-      "@type": "Organization",
-      "name": "AunySillyMe",
-      "url": "https://aunysillyme.com"
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${origin}/#software`,
+      "name": "Website Build Skill",
+      "description": landingDescription,
+      "url": `${origin}/`,
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Linux, Windows",
+      "softwareRequirements": "Node.js 20+",
+      "softwareVersion": "0.1.24",
+      "isAccessibleForFree": true,
+      "license": "https://spdx.org/licenses/MIT.html",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@id": "https://aunysillyme.dev/#person" },
+      "sameAs": [
+        repository,
+        "https://www.npmjs.com/package/website-build-skill"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://aunysillyme.dev/#person",
+      "name": "Auny Hossain",
+      "alternateName": ["Auny", "AunySillyMe"],
+      "url": "https://aunysillyme.dev/",
+      "worksFor": {
+        "@type": "Organization",
+        "@id": "https://www.aunysillyme.com/#organization",
+        "name": "AunySillyMe",
+        "legalName": "Auny LLC",
+        "url": "https://aunysillyme.com/"
+      },
+      "sameAs": [
+        "https://www.aunysillyme.com/#person",
+        "https://aunysillyme.com/",
+        "https://www.aunysillyme.com/",
+        "https://github.com/aunysillyme",
+        "https://github.com/aunysillyme-dev",
+        "https://www.npmjs.com/~aunysillyme",
+        "https://x.com/AunySillyMe"
+      ]
     }
-  });
+  ];
+  if (route.startsWith('/docs/')) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": `${origin}${route}#breadcrumb`,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aunysillyme.dev/" },
+        { "@type": "ListItem", "position": 2, "name": "Website Build Skill", "item": `${origin}/` },
+        { "@type": "ListItem", "position": 3, "name": title.replace(/\s*\|\s*(?:Website Build Skill|Docs)$/, ''), "item": `${origin}${route}` }
+      ]
+    });
+  }
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
+}
+
+export function documentHtml({title, description, route, body, discovery = true}) {
+  const socialImage = `${origin}/assets/trailer-poster.jpg`;
+  const socialAlt = 'Website Build Skill: current web research, design, accessibility, speed, SEO and security for AI coding agents.';
+  const jsonLd = buildJsonLd(route, title);
   return `<!doctype html><html lang="en"><head><script type="application/ld+json">\n${jsonLd}\n</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>${escape(title)}</title><meta name="description" content="${escape(description)}">
 <meta name="is-agentic-site-type" content="app">
-${discovery ? `<link rel="describedby" href="${origin}/llms.txt"><link rel="alternate" type="text/markdown" href="${origin}${route}index.md">` : '<meta name="robots" content="noindex">'}
-<link rel="canonical" href="${origin}${route}"><meta property="og:type" content="website">
+${discovery ? `<link rel="describedby" href="${origin}/llms.txt"><link rel="alternate" type="text/markdown" href="${origin}${route}index.md"><link rel="sitemap" type="application/xml" href="${origin}/sitemap.xml">` : '<meta name="robots" content="noindex">'}
+<link rel="canonical" href="${origin}${route}"><meta property="og:type" content="website"><meta property="og:site_name" content="AunySillyMe.dev">
 <meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}">
-<meta property="og:url" content="${origin}${route}"><meta property="og:image" content="${origin}/assets/trailer-poster.jpg"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}"><meta name="twitter:image" content="${origin}/assets/trailer-poster.jpg"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#050806">
-<link rel="icon" href="/assets/avatar.png"><link rel="apple-touch-icon" href="/assets/avatar.png">
+<meta property="og:url" content="${origin}${route}"><meta property="og:image" content="${socialImage}"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1280"><meta property="og:image:height" content="720"><meta property="og:image:alt" content="${escape(socialAlt)}">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@AunySillyMe"><meta name="twitter:creator" content="@AunySillyMe">
+<meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}"><meta name="twitter:image" content="${socialImage}"><meta name="twitter:image:alt" content="${escape(socialAlt)}"><meta name="theme-color" content="#050806">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/png" href="/assets/avatar.png"><link rel="apple-touch-icon" href="/assets/avatar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css"><link rel="stylesheet" href="/assets/projects-popup.css"><script type="module" src="/assets/site.js"></script><script defer src="/assets/projects-popup.js"></script>

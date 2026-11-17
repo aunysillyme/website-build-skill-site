@@ -6,11 +6,65 @@ import {parseDocument} from 'htmlparser2';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {runInNewContext} from 'node:vm';
+import {marked} from 'marked';
+import {rewriteMirror, renderMarkdown, pages, origin, repository} from './content.mjs';
 const out=fileURLToPath(new URL('./dist/',import.meta.url));
 async function files(dir){const list=[];for(const name of await readdir(dir)){const file=path.join(dir,name);if((await stat(file)).isDirectory())list.push(...await files(file));else list.push(file);}return list;}
 function nodes(node){return [node,...(node.children||[]).flatMap(nodes)];}
+test('Markdown mirrors have no relative link or image targets',async()=>{
+  const relative=[];
+  for(const file of (await files(out)).filter(file=>file.endsWith('/index.md'))){
+    marked.walkTokens(marked.lexer(await readFile(file,'utf8')),token=>{
+      if(['link','image','def'].includes(token.type)&&token.href&&!/^(?:[a-z][a-z\d+.-]*:|\/\/|#)/i.test(token.href))relative.push(`${path.relative(out,file)}: ${token.href}`);
+    });
+  }
+  assert.equal(relative.length,0,`${relative.length} relative targets; examples: ${relative.slice(0,5).join(', ')}`);
+});
+test('Mirror rewriting preserves code and resolves tables, references, images and fragments',()=>{
+  const sha='a'.repeat(40);
+  const input='| Page | Image |\n| --- | --- |\n| [Guide](METHOD.md#part) | ![Image](demo.gif) |\n\n- [File](../bin/tool.js)\n\n> [Directory](../test/fixtures/)\n\n[Reference][ref] ![Picture][pic] [Anchor](#here) [Mail](mailto:a@example.com) [Web](https://example.com)\n\n[ref]: ../CHANGELOG.md#history\n[pic]: demo.gif\n\n`[inline](keep.md)`\n\n```md\n[code](keep.md)\n```\n';
+  const result=rewriteMirror(input,'docs/README.md',sha);
+  assert.ok(result.includes(`${origin}/docs/method/#part`));
+  assert.ok(result.includes(`${repository}/raw/${sha}/docs/demo.gif`));
+  assert.ok(result.includes(`${repository}/blob/${sha}/bin/tool.js`));
+  assert.ok(result.includes(`${repository}/tree/${sha}/test/fixtures/`));
+  assert.ok(result.includes(`[ref]: ${origin}/docs/changelog/#history`));
+  assert.ok(result.includes(`[pic]: ${repository}/raw/${sha}/docs/demo.gif`));
+  assert.ok(result.includes('[Anchor](#here) [Mail](mailto:a@example.com) [Web](https://example.com)'));
+  assert.ok(result.includes('`[inline](keep.md)`\n\n```md\n[code](keep.md)\n```'));
+  assert.ok(renderMarkdown('[Dir](../test/fixtures/)','docs/README.md').includes(`${repository}/tree/main/test/fixtures/`));
+});
+test('Every public route has distinct SEO title/description, JSON-LD graph, dark color-scheme, favicon and AGENTS.md alias',async()=>{
+  assert.ok((await stat(path.join(out,'favicon.ico'))).isFile());
+  assert.equal(await readFile(path.join(out,'AGENTS.md'),'utf8'),await readFile(path.join(out,'agents.md'),'utf8'));
+  const css=await readFile(path.join(out,'assets/site.css'),'utf8');
+  assert.match(css,/color-scheme:dark/);
+  assert.match(css,/p a,li a,\.bottom a\{text-decoration:underline;text-underline-offset:3px\}/);
+  const publicRoutes=['/',...[...pages.values()].map(slug=>`/docs/${slug}/`)];
+  const titles=new Set(),descriptions=new Set();
+  for(const route of publicRoutes){
+    const html=await readFile(path.join(out,route,'index.html'),'utf8');
+    const doc=nodes(parseDocument(html));
+    const titleNode=doc.find(n=>n.name==='title');
+    const titleText=titleNode?.children?.map(c=>c.data||'').join('').replaceAll('&amp;','&')||'';
+    assert.ok(titleText.length>0&&titleText.length<=60,`${route}: title length ${titleText.length}`);
+    assert.ok(!titles.has(titleText),`${route}: duplicate title`);
+    titles.add(titleText);
+    const desc=doc.find(n=>n.name==='meta'&&n.attribs.name==='description')?.attribs.content||'';
+    assert.ok(desc.length>=130&&desc.length<=155,`${route}: description length ${desc.length}`);
+    assert.ok(!descriptions.has(desc),`${route}: duplicate description`);
+    descriptions.add(desc);
+    assert.equal(doc.find(n=>n.name==='meta'&&n.attribs.name==='color-scheme')?.attribs.content,'dark');
+    const ldMatch=html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/);
+    assert.ok(ldMatch,`${route}: missing JSON-LD`);
+    const ld=JSON.parse(ldMatch[1]);
+    assert.ok(Array.isArray(ld['@graph']));
+    for(const type of ['SoftwareSourceCode','SoftwareApplication','Person'])assert.ok(ld['@graph'].some(item=>item['@type']===type));
+    if(route.startsWith('/docs/'))assert.ok(ld['@graph'].some(item=>item['@type']==='BreadcrumbList'));
+  }
+});
 test('Every generated local link, asset and anchor resolves',async()=>{for(const file of (await files(out)).filter(f=>f.endsWith('.html'))){const doc=nodes(parseDocument(await readFile(file,'utf8')));for(const node of doc){const link=node.attribs?.href||node.attribs?.src||node.attribs?.poster;if(!link||/^(https?:|mailto:|data:)/.test(link))continue;/* Vercel serves this script at deployment time. */if(node.name==='script'&&link==='/_vercel/speed-insights/script.js')continue;const [url,fragment]=link.split('#');let target=url?path.join(out,url):file;if(url?.endsWith('/'))target=path.join(target,'index.html');assert.ok((await stat(target)).isFile(),`${file}: ${link}`);if(fragment){const targetNodes=url?nodes(parseDocument(await readFile(target,'utf8'))):doc;assert.ok(targetNodes.some(n=>n.attribs?.id===decodeURIComponent(fragment)),`${file}: missing anchor ${link}`);}}}});
-test('Landing has WBS metadata, verified release, limitations and product media',async()=>{const html=await readFile(path.join(out,'index.html'),'utf8');assert.match(html,/<title>Website Build Skill/);assert.match(html,/14.5-SECOND TRAILER/);assert.match(html,/native SOLO discovery and loading tested/);assert.match(html,/TEAM and the full SOLO route remain unverified/);const fallback=JSON.parse(await readFile(new URL('./release-fallback.json',import.meta.url),'utf8'));assert.ok(html.includes(`v${fallback.version}`));assert.doesNotMatch(html.replace(/<!-- projects-popup:start -->[\s\S]*?<!-- projects-popup:end -->/g,''),/Model router for AI coding|aunx|Model-orchestrator trailer|googletagmanager/,'Landing content outside the projects popup must stay WBS-only');});
+test('Landing has WBS metadata, verified release, limitations and product media',async()=>{const html=await readFile(path.join(out,'index.html'),'utf8');assert.match(html,/<title>Website Build Skill/);assert.match(html,/14.5-SECOND TRAILER/);assert.match(html,/native SOLO discovery and loading tested/);assert.match(html,/TEAM and the full SOLO route remain unverified/);const fallback=JSON.parse(await readFile(new URL('./release-fallback.json',import.meta.url),'utf8'));assert.ok(html.includes(`v${fallback.version}`));assert.doesNotMatch(html.replace(/<!-- projects-popup:start -->[\s\S]*?<!-- projects-popup:end -->|<!-- projects-siblings:start -->[\s\S]*?<!-- projects-siblings:end -->/g,''),/Model router for AI coding|aunx|Model-orchestrator trailer|googletagmanager/,'Landing content outside the projects popup must stay WBS-only');});
 
 test('Security headers cover every route and inline script hashes match the build',async()=>{
   const config=JSON.parse(await readFile(new URL('./vercel.json',import.meta.url),'utf8'));
@@ -34,7 +88,7 @@ test('Security headers cover every route and inline script hashes match the buil
     for(const node of nodes(parseDocument(html))){
       for(const name of Object.keys(node.attribs||{}))assert.ok(!/^on/i.test(name)&&name!=='style',`${file}: inline ${name}`);
       const url=node.attribs?.src||(node.name==='link'?node.attribs?.href:null);
-      if(!url?.startsWith('https://')||node.attribs?.rel==='preconnect'||['canonical','describedby','alternate'].includes(node.attribs?.rel))continue;
+      if(!url?.startsWith('https://')||node.attribs?.rel==='preconnect'||['canonical','describedby','alternate','sitemap'].includes(node.attribs?.rel))continue;
       const directive=node.name==='img'?'img-src':node.name==='link'?'style-src':node.name==='source'?'media-src':'script-src';
       assert.ok(directives[directive].includes(new URL(url).origin),`${file}: ${url} missing from ${directive}`);
     }
