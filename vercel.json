@@ -29,7 +29,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'sha256-0kH7UXZK85RC2BL/OFTZSn20CWcLt9X72ZM6h3dKZXk=' 'sha256-8Az+/2aHDZJpaOOjcZoaXx5q5hdoBzCuGf1aNBIxmzE=' 'sha256-Ac4Xxx6c8LvtsO8brin1gUkD6hFhW0p3FOMZ6kyHv5s=' 'sha256-BkJzL9eidYUKEfJZfc81u5ZQyO2IdI3l2nya/1ysWto=' 'sha256-JZ1I56CLhLcjKLu4KkEqwGRT2rr20WmEj0rq0Mhvn+g=' 'sha256-JaPB/Q6r3h5ds+yqTVQGtddtPfA8Gqq93ZUgKpKxQ0c=' 'sha256-McS3Iai6bkNbTIvpnV/y1cIU3Eh34kBE3GU8qtLiedA=' 'sha256-T5Qzwxs+ZP3+s0dSrt5zneR1o0sIR92TuHBqVnmj/CA=' 'sha256-YXPGrQlWF9qiZe7eCkFK2Ig1+jOCJ55bCkkQOBhRESw=' 'sha256-d5jYTbRjzS8a0XIjEX5H2k3BaU8vTJkbIJLA6PX+e0c=' 'sha256-fROoQ49bQpJ1SHwl1VvREXULwGLX+qxUXjsPv7AM0/M=' 'sha256-gqWJsEi3TREti3W6cQ5Zsh78qPXVdsZDGPlyLBX4LJk=' 'sha256-k56/MQWamQYHZ5QTRd3L2/LepxolGr3iQX8A+CicAlc=' 'sha256-ki4rorpkpyzGD8BwZWDBh/qja7Ca8Vgy389tUGy0I5Y=' 'sha256-nPdthoamD5teVMPSQ3J7KZGmT2t8w6np93DAQJYNh2U=' 'sha256-phfWkJvZqTtYWf+TXPQ2LvGdd5XmPIO/wDFnyGv2/6M=' 'sha256-ukM5mpqyMOsos4qvTP01IFUhWDqep75uvXkytWpsNkg='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://img.shields.io; connect-src 'self' https://registry.npmjs.org https://fonts.googleapis.com; media-src 'self'; form-action 'none'"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'sha256-0kH7UXZK85RC2BL/OFTZSn20CWcLt9X72ZM6h3dKZXk=' 'sha256-8Az+/2aHDZJpaOOjcZoaXx5q5hdoBzCuGf1aNBIxmzE=' 'sha256-Ac4Xxx6c8LvtsO8brin1gUkD6hFhW0p3FOMZ6kyHv5s=' 'sha256-BkJzL9eidYUKEfJZfc81u5ZQyO2IdI3l2nya/1ysWto=' 'sha256-JZ1I56CLhLcjKLu4KkEqwGRT2rr20WmEj0rq0Mhvn+g=' 'sha256-JaPB/Q6r3h5ds+yqTVQGtddtPfA8Gqq93ZUgKpKxQ0c=' 'sha256-McS3Iai6bkNbTIvpnV/y1cIU3Eh34kBE3GU8qtLiedA=' 'sha256-T5Qzwxs+ZP3+s0dSrt5zneR1o0sIR92TuHBqVnmj/CA=' 'sha256-YXPGrQlWF9qiZe7eCkFK2Ig1+jOCJ55bCkkQOBhRESw=' 'sha256-d5jYTbRjzS8a0XIjEX5H2k3BaU8vTJkbIJLA6PX+e0c=' 'sha256-fROoQ49bQpJ1SHwl1VvREXULwGLX+qxUXjsPv7AM0/M=' 'sha256-gqWJsEi3TREti3W6cQ5Zsh78qPXVdsZDGPlyLBX4LJk=' 'sha256-k56/MQWamQYHZ5QTRd3L2/LepxolGr3iQX8A+CicAlc=' 'sha256-ki4rorpkpyzGD8BwZWDBh/qja7Ca8Vgy389tUGy0I5Y=' 'sha256-nPdthoamD5teVMPSQ3J7KZGmT2t8w6np93DAQJYNh2U=' 'sha256-phfWkJvZqTtYWf+TXPQ2LvGdd5XmPIO/wDFnyGv2/6M=' 'sha256-ukM5mpqyMOsos4qvTP01IFUhWDqep75uvXkytWpsNkg='; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://img.shields.io https://api.scorecard.dev https://raw.githubusercontent.com; connect-src 'self' https://registry.npmjs.org https://fonts.googleapis.com; media-src 'self'; form-action 'none'"
         },
         {
           "key": "X-Frame-Options",
@@ -48,5 +48,10 @@
       "destination": "/docs/guides/",
       "permanent": true
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "wip/**": false
+    }
+  }
 }

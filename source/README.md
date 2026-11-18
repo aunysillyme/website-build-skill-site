@@ -1,13 +1,64 @@
 # website-build-skill
 
-[![npm version](https://img.shields.io/npm/v/website-build-skill)](https://www.npmjs.com/package/website-build-skill)
+**A skill pack that turns your AI into an expert website builder.** It teaches your LLM or agent current, researched practice in design, brand, accessibility, performance, search, security, stacks and code, so the sites it builds look and work like a professional made them.
+
+Your AI builds from what is true on the day you ask, not from what it remembers.
+
+[![npm version](https://img.shields.io/npm/v/website-build-skill)](https://www.npmjs.com/package/website-build-skill) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/aunysillyme/website-build-skill/badge)](https://scorecard.dev/viewer/?uri=github.com/aunysillyme/website-build-skill)
 [![Repository checks](https://github.com/aunysillyme/website-build-skill/actions/workflows/check.yml/badge.svg)](https://github.com/aunysillyme/website-build-skill/actions/workflows/check.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**A skill pack that turns your AI into an expert website builder.** It teaches your LLM or agent current, researched practice in design, brand, accessibility, performance, search, security, stacks and code, so the sites it builds look and work like a professional made them.
+## See it
 
-- **The problem:** an AI builds websites from what it remembered at training time: dated frameworks, generic layouts, and missed accessibility, speed and security basics.
-- **What you get:** research instructions that make your AI look up what is current on the day you ask, plus design, coding, accessibility, performance, search and security playbooks and checklists it follows on every site.
+Request: "Build a one-page website for Crumb & Co, a neighbourhood bakery. White background, warm and simple. It needs the menu with prices, opening hours, the address with a map link, and a button to order ahead. Static site, no framework."
+
+**24 min 48 s of active time, research to proof, one run.** One host (Claude Code), one model (Claude Sonnet 5.5), SOLO. Demo business with placeholder content, not deployed. Install and report writing are outside that time; stage intervals include thinking and tool waits. Independent review, screen-reader and Lighthouse checks stayed blocked.
+
+Gate results are those of package 0.1.19. The current BM04 also requires screenshot sheets and 4x crops of each mockup, which this run did not produce.
+
+Chosen mockup: B, Info Strip (operator selection).
+
+![Crumb & Co chosen Info Strip mockup at 1440 px, with a long test headline, hours, address and menu](https://raw.githubusercontent.com/aunysillyme/website-build-skill/main/docs/showcase/crumb-and-co/mockups/b-info-strip-1440.png)
+
+Built page:
+
+![Crumb & Co built demo page at 1440 px, with the shorter headline, hours table and placeholder-content notice](https://raw.githubusercontent.com/aunysillyme/website-build-skill/main/docs/showcase/crumb-and-co/built/site-1440.png)
+
+See [all three directions, mobile views, stage times and limits](https://github.com/aunysillyme/website-build-skill/blob/v0.1.22/docs/showcase/README.md).
+
+Treat the first mockup as a draft: say what feels off and ask again.
+
+For a new engagement, the current method requires a saved research library, brand rules,
+three visual directions with screenshot sheets and 4x crops of each mockup,
+the selected website and evidence for its release checks.
+Start with the size you need, then install and follow the route below.
+
+## Pick the size
+
+The one-page entry is one measured demo run through Prove, with limits. Other tiers are ESTIMATES for planning.
+
+| Size | What it holds | Time and evidence |
+| --- | --- | --- |
+| One page | One primary action, essential sections, contact details and a responsive layout. | MEASURED: 24 min 48 s, research to proof, [one demo run with limits](https://github.com/aunysillyme/website-build-skill/blob/v0.1.22/docs/showcase/README.md). |
+| Small site (2-6 pages) | Shared navigation and styles, a home page and supporting service, work, about or contact pages. | ESTIMATE: 1-2 working days |
+| Full rebuild | Existing-site review, content and route mapping, redesigned page templates, redirects and release checks. | ESTIMATE: 1-2 weeks |
+
+Produce a viewable mockup within the first hour, whatever the size. Record any
+blocked prerequisite and missed target; keep research and visual proof gates in force.
+Propose a full rebuild with a smaller first version and wait for the user's yes
+before starting the full rebuild. Use the recorded demo as a reference with its stated limits.
+
+## How long it takes
+
+The recorded host trials cover loading the skill, about 1-3 minutes, with one run
+each for [Claude Code](docs/evidence/host-trial-claude-code-2026-09-24.json),
+[Codex](docs/evidence/host-trial-codex-2026-09-24.json) and
+[Grok Build CLI](docs/evidence/host-trial-grok-build-2026-09-24.json).
+These are loading checks. The [Crumb & Co run](https://github.com/aunysillyme/website-build-skill/blob/v0.1.22/docs/showcase/README.md) separately records
+24 min 48 s across Research, Learn, Ingest, Scope, Match, Mock, Choose, Build and Prove.
+Its 43 s install is logged separately. Stage intervals include thinking and tool waits;
+writing the report afterward is excluded. One host, one model and placeholder content
+make this a reference point, with Protect, Challenge and Ship still not run.
 
 ## Quick start
 
@@ -62,15 +113,16 @@ Ask your AI to name the files it read before starting.
 | Hosting and operations | It learns to promote an exact release artifact, verify live routes, plan rollback, and document monitoring, recovery and maintenance ownership. | [Deploy and operate](skills/website-build-skill/playbooks/deploy-and-operate.md), [ship and verify](skills/website-build-skill/prompts/11-ship-and-verify.md) |
 | Review and release | It learns to prepare a fixed candidate for review by a different model family, reproduce findings, verify fixes, and check release authority and evidence. | [Adversarial review](skills/website-build-skill/prompts/10-adversarial-pre-ship.md), [ship checklist](skills/website-build-skill/checklists/ship.md) |
 
+<!-- set:start -->
 ## Part of a set
-
-Three open-source tools that work on their own and fit together:
 
 | Repo | What it gives you |
 |---|---|
-| [agent-personalizer](https://github.com/aunysillyme/agent-personalizer) | One interview writes the profile and rules every AI you use reads, kept in sync from one source. |
-| [model-orchestrator](https://github.com/aunysillyme/model-orchestrator) | Model router for AI coding agents: installs routing rules, 8 subagents, hooks and a CLI runner so your AI picks model and effort per task and saves tokens. |
-| **website-build-skill** | A skill pack that teaches your AI current website-building expertise: research, design, code, accessibility, performance, search and security. |
+| [agent-personalizer](https://github.com/aunysillyme/agent-personalizer) | AI custom instructions from approved entries: a profile and rules for Claude Code, Codex, Cursor, Gemini CLI and ChatGPT, kept in sync from one source. |
+| [model-orchestrator](https://github.com/aunysillyme/model-orchestrator) | Model router for AI coding agents: routes routine work to cheaper models with routing rules, 8 subagents, hooks and a CLI runner |
+| [repo-build-skill](https://github.com/aunysillyme/repo-build-skill) | Skill pack that teaches your AI to build, release and launch a GitHub repo: stack pick, README, AGENTS.md, llms.txt, repo SEO and AEO, trusted publishing. |
+| **website-build-skill** | A skill pack that turns your AI into an expert website builder: current research, design, code, accessibility, speed, SEO and security, alone or as a team. |
+<!-- set:end -->
 
 ## How your AI uses it on a site
 
@@ -89,18 +141,18 @@ Every site follows the same twelve stages, so your AI researches before it desig
 11. **Challenge:** have a different model family review the fixed candidate read-only.
 12. **Ship:** authorize release, check the live site and save its operations document.
 
-[Method details](docs/METHOD.md) · [fictional brief](skills/website-build-skill/examples/fictional-studio-brief.md).
+[Method details](docs/METHOD.md) · [real Crumb & Co run](skills/website-build-skill/examples/crumb-and-co-real-run.md) · [invented brief](skills/website-build-skill/examples/fictional-studio-brief.md).
 
 ## Two ways to work
 
 | Choice | What happens | Works with |
 |---|---|---|
 | **1 · Teach my AI** (SOLO) | One AI learns the whole method and does every job itself. Nothing else to install. | Any AI: Claude, ChatGPT, Grok, Cursor, Copilot |
-| **2 · Give me the team** (TEAM) | Seven specialist agents, one per job. One command installs their files; you open each session yourself and carry the handoffs between them. Researcher goes first. | Claude Code, Codex, Hermes, Gemini (via Antigravity CLI), Grok Bot |
+| **2 · Give me the team** (TEAM) | Seven role prompts (you run each session), one per job. One command installs their files; you open each session yourself and carry the handoffs between them. Researcher goes first. | Claude Code, Codex, Hermes, Gemini (via Antigravity CLI), Grok Bot |
 
 Not sure? Pick 1. Moving to 2 later keeps everything you have already done.
 
-The installer also asks where to save the work: an Obsidian vault folder, a folder on this computer (default: your project folder), Notion (a local working copy plus an export of the finished library), or another local folder. That folder becomes the workspace root.
+The installer also asks where to save the work: an Obsidian vault folder, a folder on this computer (default: your project folder), Notion (a local working copy plus an export of the finished library), or another local folder. That folder becomes the workspace root. See [what the installer asks](docs/INSTALLER.md#what-the-installer-asks) for the full menu.
 
 SOLO follows the same jobs with saved self-handoffs. TEAM uses seven sessions you open yourself, with handoffs you carry between them and Researcher first:
 
@@ -126,6 +178,8 @@ SOLO follows the same jobs with saved self-handoffs. TEAM uses seven sessions yo
 
 With any of these missing, the AI hands you the exact next step (a query plan, file contents to save, a review packet, commands to run) and the stage continues when you bring the result back.
 
+See [evidence status, permissions and tools](docs/COMPATIBILITY.md#evidence-status-permissions-and-tools) for recorded proof and host requirements.
+
 ## Choose your host
 
 Each guide below has a documented setup with its own loading check. Native loading is tested
@@ -137,7 +191,7 @@ current status host by host.
 | [Claude Code](adapters/claude-code.md) | Install with `--target claude-code`; ask it to read `.claude/skills/website-build-skill/SKILL.md` | Method files; TEAM adds the full role bundles |
 | [Codex](adapters/codex.md) | Install with `--target codex`; ask it to read `.agents/skills/website-build-skill/SKILL.md` | Method files; TEAM adds the full role bundles |
 | [Hermes](adapters/hermes.md) | Install with `--target hermes`; follow the trust and loading steps | Shared method files; TEAM adds the full role bundles |
-| [Gemini (via Antigravity CLI)](adapters/antigravity.md) | Install with `--target antigravity`; read `.website-build-skill/SKILL.md` | Portable method files; TEAM adds the full role bundles |
+| [Gemini (via Antigravity CLI)](adapters/antigravity.md) | Install with `--target antigravity`; it writes `.agents/skills/website-build-skill/`, where Antigravity looks for workspace skills | Method files; TEAM adds the full role bundles |
 | [Grok Bot](adapters/grok.md) | Attach the five bundles and follow the manual team setup | Complete role instructions and addressed handoffs |
 | [Claude Desktop](adapters/claude-desktop.md) | Attach the five bundles and paste the shared instructions | The SOLO method in your chat |
 | [ChatGPT](adapters/chatgpt-project.md) | Add the instructions and five bundles to a Project or [custom GPT](adapters/custom-gpt.md) | The SOLO method and saved state packets |
@@ -178,15 +232,25 @@ The [installer contract](docs/INSTALLER.md) defines preflight checks, exit codes
 
 ## Common questions
 
-**How do I teach Claude Code or Codex to build better websites?** Run `npx website-build-skill`, pick your host and let it copy the skill pack into your host's folder, then ask your AI to read the installed `SKILL.md`. It learns current practice in research, design, code, accessibility, performance, search and security before it touches your site.
+### How do I teach Claude Code or Codex to build better websites?
 
-**Which AI tools does it work with?** Any AI that can read files works with the SOLO method, including Claude, ChatGPT, Grok, Cursor and Copilot. TEAM installs the seven workers' files for Claude Code, Codex, Hermes, Gemini (via Antigravity CLI) and Grok Bot in one command; you open each session yourself and carry the handoffs between them, with Researcher first; see [Choose your host](#choose-your-host) for each setup guide.
+Run `npx website-build-skill`, pick your host and let it copy the skill pack into your host's folder, then ask your AI to read the installed `SKILL.md`. It learns current practice in research, design, code, accessibility, performance, search and security before it touches your site.
 
-**What does my AI research before it builds?** It researches fourteen domains current to the day of your request, from design and accessibility to performance, security, stack and search, and saves a library with source URLs and access dates so later pages can refresh stale claims. See [What your AI learns](#what-your-ai-learns) for the full list.
+### Which AI tools does it work with?
 
-**Can one AI run it, or does it need a team?** Either. SOLO has one AI learn the whole method and do every job itself with nothing else to install; TEAM installs the seven workers' files in one command; you open each session yourself and carry the handoffs between them. Researcher goes first. Pick SOLO if you are not sure; moving to TEAM later keeps everything you have already done.
+Any AI that can read files works with the SOLO method, including Claude, ChatGPT, Grok, Cursor and Copilot. TEAM installs the seven workers' files for Claude Code, Codex, Hermes, Gemini (via Antigravity CLI) and Grok Bot in one command; you open each session yourself and carry the handoffs between them, with Researcher first; see [Choose your host](#choose-your-host) for each setup guide.
 
-**How do I remove it?** Follow [Uninstall](#uninstall), using the target and directory from your install. It removes only files the installer wrote that still match its receipt. See the [installer guide](docs/INSTALLER.md) for flags and exit codes.
+### What does my AI research before it builds?
+
+It researches fourteen domains current to the day of your request, from design and accessibility to performance, security, stack and search, and saves a library with source URLs and access dates so later pages can refresh stale claims. See [What your AI learns](#what-your-ai-learns) for the full list.
+
+### Can one AI run it, or does it need a team?
+
+Either. SOLO has one AI learn the whole method and do every job itself with nothing else to install; TEAM installs the seven workers' files in one command; you open each session yourself and carry the handoffs between them. Researcher goes first. Pick SOLO if you are not sure; moving to TEAM later keeps everything you have already done.
+
+### How do I remove it?
+
+Follow [Uninstall](#uninstall), using the target and directory from your install. It removes only files the installer wrote that still match its receipt. See the [installer guide](docs/INSTALLER.md) for flags and exit codes.
 
 ## Uninstall
 
@@ -209,8 +273,10 @@ Use the target and directory from your install; it removes only files the instal
 ## Contributing, credits and license
 
 Contributions welcome: reproducible defects, clearer instructions, accessible examples and host evidence.
+Pull requests are accepted under the [contributor license agreement](CLA.md); the checkbox in the pull request template records your agreement.
 Read [CONTRIBUTING](CONTRIBUTING.md), [the conduct policy](CODE_OF_CONDUCT.md),
 [SECURITY](SECURITY.md), [maintainers](MAINTAINERS.md) and [release operations](RELEASING.md).
 [Provenance](docs/PROVENANCE.md) records the method's sources and attribution.
+Credits: inspired by [Anatomy by Ryan](https://github.com/wheresryan22/anatomy) (MIT), which leads with results, real times and limits.
 [Evaluation](docs/EVALUATION.md) describes the checks; run `npm run build`, `npm run check` and `npm test` locally.
 Original package work is licensed under [MIT](LICENSE); the covenant retains its attribution.
