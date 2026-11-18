@@ -19,7 +19,7 @@ export const routeMeta = new Map([
   }],
   ['/docs/guides/', {
     title: 'All Documentation & Host Guides | Website Build Skill',
-    description: 'Complete index of website-build-skill documentation: installer flags, 7-stage build method, host compatibility, evaluation rubric and adapter guides.',
+    description: 'Complete index of website-build-skill documentation: installer flags, 12-stage build method, host compatibility, evaluation rubric and adapter guides.',
   }],
   ['/docs/installer/', {
     title: 'Installer CLI & File Contract | Website Build Skill',
@@ -61,9 +61,13 @@ export const routeMeta = new Map([
     title: 'Hermes Agent Adapter Guide | Website Build Skill',
     description: 'Configure website-build-skill for Nous Research Hermes Agent: skill folder installation, prompt activation and tested compatibility boundaries.',
   }],
+  ['/docs/gemini-cli/', {
+    title: 'Gemini CLI Skill Adapter Guide | Website Build Skill',
+    description: 'Install and run website-build-skill in Gemini CLI: .gemini/skills workspace and user paths, generated subagents, SKILL.md activation and checks.',
+  }],
   ['/docs/antigravity/', {
-    title: 'Gemini & Antigravity CLI Guide | Website Build Skill',
-    description: 'Set up website-build-skill in Gemini CLI and Antigravity: global and workspace .agents/skills paths, SKILL.md activation and verification commands.',
+    title: 'Antigravity Agent Adapter Guide | Website Build Skill',
+    description: 'Install and run website-build-skill in Google Antigravity: .agents/skills and ~/.gemini/config/skills paths, subagent definitions and verification.',
   }],
   ['/docs/grok/', {
     title: 'Grok Adapter & Manual Setup Guide | Website Build Skill',

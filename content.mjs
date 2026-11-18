@@ -12,7 +12,7 @@ export const pages = new Map([
  ['README.md','overview'], ['docs/README.md','guides'], ['docs/INSTALLER.md','installer'],
  ['docs/COMPATIBILITY.md','compatibility'], ['docs/METHOD.md','method'], ['docs/EVALUATION.md','evaluation'],
  ['docs/PROVENANCE.md','provenance'], ['docs/LIBRARY-CHECK.md','library-check'], ['CHANGELOG.md','changelog'],
- ...['codex','claude-code','hermes','antigravity','grok','chatgpt-project'].map(name=>[`adapters/${name}.md`,name]),
+ ...['codex','claude-code','hermes','gemini-cli','antigravity','grok','chatgpt-project'].map(name=>[`adapters/${name}.md`,name]),
 ]);
 export const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[char]));
 export const semver = validVersion;
@@ -134,7 +134,7 @@ function buildJsonLd(route, title) {
       "codeRepository": repository,
       "programmingLanguage": "JavaScript",
       "runtimePlatform": "Node.js",
-      "version": "0.1.24",
+      "version": "0.1.25",
       "license": "https://spdx.org/licenses/MIT.html",
       "author": { "@id": "https://aunysillyme.dev/#person" },
       "sameAs": [
@@ -150,8 +150,8 @@ function buildJsonLd(route, title) {
       "url": `${origin}/`,
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "macOS, Linux, Windows",
-      "softwareRequirements": "Node.js 20+",
-      "softwareVersion": "0.1.24",
+      "softwareRequirements": "Node.js 22+",
+      "softwareVersion": "0.1.25",
       "isAccessibleForFree": true,
       "license": "https://spdx.org/licenses/MIT.html",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },

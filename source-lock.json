@@ -1,22 +1,23 @@
 {
   "repository": "aunysillyme/website-build-skill",
-  "commit": "7b5ea9b677abc36791aafe1670b55b8ceedcf203",
-  "version": "0.1.24",
+  "commit": "7f86b30ce97fc813dc4a4e3c1ea750ac3d64e01f",
+  "version": "0.1.25",
   "files": {
-    "README.md": "f8bdeb548d5e9725fc56c789ea66b0e4ed98488ecefaa923982c4f4671899a2c",
-    "docs/README.md": "eee5835dc95cd0d757ef6e011160d404368e7b0168b9fd2fd92c9bc67a84c92d",
-    "docs/INSTALLER.md": "cc9c774bca69925ada1779c0165068e57e6d417f24566d4ff9e9ecfd72d07d40",
-    "docs/COMPATIBILITY.md": "42885686e827610341479b6d733a835fccdde78115933b773b276ab79b0153cf",
+    "README.md": "e012465e800fac5e94a1796b6013848973fd905b0f4a8cdf79458b83a7a26f6a",
+    "docs/README.md": "a1fc4eff432466f0a500b09c8f9246ae900e72e7c63c4dd51d258936f0a1b4d6",
+    "docs/INSTALLER.md": "86c2cdfde4657e95bebe20fd201a1c127806aa18a762d7f7341ff1e02557da9d",
+    "docs/COMPATIBILITY.md": "a5bda2e0000a1b2d02b40904d802ba74faf5aeb4fbb99ed42dad521afa334e50",
     "docs/METHOD.md": "3b45db282de20f327c903e86f6d7da9440b5913907dfb75cadedf5e6b7210f95",
-    "docs/EVALUATION.md": "dd44d7a4b448ee0734487c400712c842e15d22e3187aa961913c75d4e9eb3ad2",
-    "docs/PROVENANCE.md": "1de681df441c6ebf78fe209dcd29ad304857b3295e78cf4dde4cd183b4c614db",
+    "docs/EVALUATION.md": "e406e5457a25907236efeac8a91e900cbdb63a2095ebc5ba2a624d6b4597cf59",
+    "docs/PROVENANCE.md": "5fc99a7450d09dd1f3dee855f966142e8a2dfcf74906bfbde4540e468a7f9a5c",
     "docs/LIBRARY-CHECK.md": "8aca9f1dcc5d99b47099ca58e9a5c7af6ad808415d7ebb6d5aa8d930d212a698",
-    "CHANGELOG.md": "f0a43a9fa582245e8bab87e8301364f3837378f35a5c694756712fe1c1d06e86",
-    "adapters/codex.md": "005d05bfec4d1765e5d7e1048f086b344fa9ea6e50321ad8fd154001cc0f47fe",
-    "adapters/claude-code.md": "1a811ad3ca4520f1a87f1d66a09d7d21456eb9d9fbbf1697146410e223d3d5c1",
-    "adapters/hermes.md": "bfb7624ce627d7a59328a16a663ed71aa96dbe24ede160bc349f13dd08cd1578",
-    "adapters/antigravity.md": "5886a7cae0de6bfd95322b01d49c2155353902e3105a02bc1780a2dff44e65ac",
-    "adapters/grok.md": "722ec03c83e8edc7cff0d2b9a6f3fc46f2e5c971a483f8a93fc799e7dae9414c",
-    "adapters/chatgpt-project.md": "e8faa8762cd4501f3400d81cd90bca91d09b43e51ad74d8b03a7e1a0a6cdfa30"
+    "CHANGELOG.md": "8ef31e9c545b968761c607c94793beb09d34233ec00a3b81bf81ab55cbcf3a3d",
+    "adapters/codex.md": "4afc303ade08bf14467798be6023ec01b4e6d42fea92ba4a036937bde313ec7a",
+    "adapters/claude-code.md": "eb1cd13c9ca81cc634ffbe928b339c003ccff4504a7fd333e15c57357f43907f",
+    "adapters/hermes.md": "9f72626204dc34844dc2e396c1c3111c14dc78d9e9c1d036435fc883d826b3b4",
+    "adapters/gemini-cli.md": "71dbd07be718630ec653b5a6836ad75150cb383d4bf8b99fe7ec7cd3640e3048",
+    "adapters/antigravity.md": "69ce85465908ea8988cb8c76a81a16222317912bc4b9d447d16d51ac5c4aefd5",
+    "adapters/grok.md": "e016b899d6ac8a2def39e964d43d729ecade0b4a7b063bf020ec9352587088e0",
+    "adapters/chatgpt-project.md": "d1b9710c76b875278cca4dc136b8564f0740514ff5c8aa40afe446b819930368"
   }
 }
